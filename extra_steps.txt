@@ -1,0 +1,12 @@
+## Copy files from local to ec2
+rsync -chavzP  -e "ssh -i ~/ec2keys/simone_rsa" ./Downloads/val_images.tgz ubuntu@ec2-35-173-2-218.compute-1.amazonaws.com:/datadisk/nga/data/
+
+
+## Copy files from ec2 to aws
+./azcopy cp "/datadisk/nga/data/train_images.tgz" "https://conduitstorage.blob.core.windows.net/xview?sv=2018-03-28&si=xviepol1&sr=c&sig=14dHx9mDq%2FPkK640e9h%2BXsnB0ob7qp0h459yMHwXrn0%3D"
+
+
+## Extra library to have it working
+
+conda install -c pytorch pytorch=1.1.0 cuda100
+

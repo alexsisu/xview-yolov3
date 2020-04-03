@@ -11,7 +11,7 @@ targets_path = 'utils/targets_c60.mat'
 parser = argparse.ArgumentParser()
 # Get data configuration
 if platform == 'darwin':  # macos
-    parser.add_argument('-image_folder', type=str, default='/Users/glennjocher/Downloads/DATA/xview/train_images/5.tif')
+    parser.add_argument('-image_folder', type=str, default='../train_images/5.tif')
     parser.add_argument('-output_folder', type=str, default='./output_xview', help='path to outputs')
     cuda = False  # torch.cuda.is_available()
 else:  # gcp
@@ -42,6 +42,7 @@ def detect(opt):
 
     # Load model 1
     model = Darknet(opt.cfg, opt.img_size)
+    print("Loading xview_best_lite")
     checkpoint = torch.load('weights/xview_best_lite.pt', map_location='cpu')
 
     model.load_state_dict(checkpoint['model'])
@@ -83,6 +84,7 @@ def detect(opt):
 
     # Set Dataloader
     classes = load_classes(opt.class_path)  # Extracts class labels from file
+    print(f"The following classes were loaded")
     dataloader = ImageFolder(opt.image_folder, batch_size=opt.batch_size, img_size=opt.img_size)
 
     imgs = []  # Stores image paths
@@ -164,6 +166,7 @@ def detect(opt):
     if len(img_detections) == 0:
         return
 
+    print("performing drawing of the output")
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
         print("image %g: '%s'" % (img_i, path))
