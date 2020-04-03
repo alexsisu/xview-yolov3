@@ -118,7 +118,10 @@ def detect(opt):
                 with torch.no_grad():
                     # Normal orientation
                     chip = torch.from_numpy(img[:, y1:y2, x1:x2]).unsqueeze(0).to(device)
+                    start_time = time.time()
                     pred = model(chip)
+                    total_time = time.time()- start_time
+                    print(f"time on slice: f{total_time}")
                     pred = pred[pred[:, :, 4] > opt.conf_thres]
                     # if (j > 0) & (len(pred) > 0):
                     #     pred = pred[(pred[:, 0] - pred[:, 2] / 2 > 2)]  # near left border
@@ -152,8 +155,12 @@ def detect(opt):
                     #     preds.append(pred.unsqueeze(0))
 
         if len(preds) > 0:
+            start_time = time.time()
             detections = non_max_suppression(torch.cat(preds, 1), opt.conf_thres, opt.nms_thres, mat_priors, img,
                                              model2, device)
+            total_time = time.time() - start_time
+            print(f"non_max_supression time: f{total_time}")
+
             img_detections.extend(detections)
             imgs.extend(img_paths)
 
@@ -197,6 +204,7 @@ def detect(opt):
                     n = (detections[:, -1].cpu() == i).sum()
                     print('%g %ss' % (n, classes[int(i)]))
 
+                start_time = time.time()
                 for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
                     # Rescale coordinates to original dimensions
                     # box_h = ((y2 - y1) / unpad_h) * img.shape[0]
@@ -217,6 +225,9 @@ def detect(opt):
                         label = '%s %.2f' % (classes[int(cls_pred)], cls_conf) if cls_conf > 0.05 else None
                         color = bbox_colors[int(np.where(unique_classes == int(cls_pred))[0])]
                         plot_one_box([x1, y1, x2, y2], img, label=label, color=color, line_thickness=1)
+
+                total_time = time.time() - start_time
+                print(f"output drawing time: f{total_time}")
 
             if opt.plot_flag:
                 # Save generated image with detections
