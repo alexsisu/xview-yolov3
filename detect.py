@@ -117,6 +117,7 @@ def detect(opt):
                 # Get detections
                 with torch.no_grad():
                     # Normal orientation
+                    print(f"Performing detection on dims y1:{y1} y2:{y2} x1:{x1} x2:{x2}")
                     chip = torch.from_numpy(img[:, y1:y2, x1:x2]).unsqueeze(0).to(device)
                     start_time = time.time()
                     pred = model(chip)
